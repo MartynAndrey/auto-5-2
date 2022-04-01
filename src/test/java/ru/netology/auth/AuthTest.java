@@ -4,24 +4,64 @@ import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.SelenideElement;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.open;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class AuthTest {
+    private RegistrationInfo userInvalidActive;
+    private RegistrationInfo userInvalidBlocked;
+    private RegistrationInfo userValidActive;
+    private RegistrationInfo userValidBlocked;
+
     @BeforeAll
-    static void setUpAll() {
-        RegistrationManager.RegistrationInfoSetUp("tim1", "pass0", "active");
-        RegistrationManager.RegistrationInfoSetUp("tim1", "pass1", "active");
-        RegistrationManager.RegistrationInfoSetUp("tim2", "pass2", "blocked");
+    public void setUpAll() {
+        this.userInvalidActive = DataGenerator.generateActiveUserInfo();
+        this.userInvalidBlocked = DataGenerator.generateBlockedUserInfo();
+        this.userValidActive = DataGenerator.generateActiveUserInfo();
+        this.userValidBlocked = DataGenerator.generateBlockedUserInfo();
+        RegistrationManager.registrationInfoSetUp(this.userValidActive);
+        RegistrationManager.registrationInfoSetUp(this.userValidBlocked);
     }
 
     @Test
-    void shouldLoginInvalid() {
+    void shouldLoginInvalidPasswordInvalidBlocked() {
         open("http://localhost:9999/");
         SelenideElement form = $("form");
-        form.$("[data-test-id='login'] input").setValue("tim0");
-        form.$("[data-test-id='password'] input").setValue("pass0");
+        form.$("[data-test-id='login'] input").setValue(this.userInvalidBlocked.getLogin());
+        form.$("[data-test-id='password'] input").setValue(this.userInvalidBlocked.getPassword());
+        form.$("[data-test-id='action-login']").click();
+        $("[data-test-id='error-notification']").shouldHave(Condition.text("Ошибка! Неверно указан логин или пароль"));
+    }
+
+    @Test
+    void shouldLoginInvalidPasswordInvalidActive() {
+        open("http://localhost:9999/");
+        SelenideElement form = $("form");
+        form.$("[data-test-id='login'] input").setValue(this.userInvalidActive.getLogin());
+        form.$("[data-test-id='password'] input").setValue(this.userInvalidActive.getPassword());
+        form.$("[data-test-id='action-login']").click();
+        $("[data-test-id='error-notification']").shouldHave(Condition.text("Ошибка! Неверно указан логин или пароль"));
+    }
+
+    @Test
+    void shouldLoginInvalidPasswordValidBlocked() {
+        open("http://localhost:9999/");
+        SelenideElement form = $("form");
+        form.$("[data-test-id='login'] input").setValue(this.userInvalidBlocked.getLogin());
+        form.$("[data-test-id='password'] input").setValue(this.userValidBlocked.getPassword());
+        form.$("[data-test-id='action-login']").click();
+        $("[data-test-id='error-notification']").shouldHave(Condition.text("Ошибка! Неверно указан логин или пароль"));
+    }
+
+    @Test
+    void shouldLoginInvalidPasswordValidActive() {
+        open("http://localhost:9999/");
+        SelenideElement form = $("form");
+        form.$("[data-test-id='login'] input").setValue(this.userInvalidActive.getLogin());
+        form.$("[data-test-id='password'] input").setValue(this.userValidActive.getPassword());
         form.$("[data-test-id='action-login']").click();
         $("[data-test-id='error-notification']").shouldHave(Condition.text("Ошибка! Неверно указан логин или пароль"));
     }
@@ -30,8 +70,8 @@ public class AuthTest {
     void shouldLoginValidPasswordInvalidStatusBlocked() {
         open("http://localhost:9999/");
         SelenideElement form = $("form");
-        form.$("[data-test-id='login'] input").setValue("tim2");
-        form.$("[data-test-id='password'] input").setValue("pass0");
+        form.$("[data-test-id='login'] input").setValue(this.userValidBlocked.getLogin());
+        form.$("[data-test-id='password'] input").setValue(this.userInvalidBlocked.getPassword());
         form.$("[data-test-id='action-login']").click();
         $("[data-test-id='error-notification']").shouldHave(Condition.text("Ошибка! Неверно указан логин или пароль"));
     }
@@ -40,8 +80,8 @@ public class AuthTest {
     void shouldLoginValidPasswordInvalidStatusActive() {
         open("http://localhost:9999/");
         SelenideElement form = $("form");
-        form.$("[data-test-id='login'] input").setValue("tim1");
-        form.$("[data-test-id='password'] input").setValue("pass0");
+        form.$("[data-test-id='login'] input").setValue(this.userValidActive.getLogin());
+        form.$("[data-test-id='password'] input").setValue(this.userInvalidActive.getPassword());
         form.$("[data-test-id='action-login']").click();
         $("[data-test-id='error-notification']").shouldHave(Condition.text("Ошибка! Неверно указан логин или пароль"));
     }
@@ -50,8 +90,8 @@ public class AuthTest {
     void shouldLoginValidPasswordValidStatusBlocked() {
         open("http://localhost:9999/");
         SelenideElement form = $("form");
-        form.$("[data-test-id='login'] input").setValue("tim2");
-        form.$("[data-test-id='password'] input").setValue("pass2");
+        form.$("[data-test-id='login'] input").setValue(this.userValidBlocked.getLogin());
+        form.$("[data-test-id='password'] input").setValue(this.userValidBlocked.getPassword());
         form.$("[data-test-id='action-login']").click();
         $("[data-test-id='error-notification']").shouldHave(Condition.text("Ошибка! Пользователь заблокирован"));
     }
@@ -60,8 +100,8 @@ public class AuthTest {
     void shouldLoginValidPasswordValidStatusActive() {
         open("http://localhost:9999/");
         SelenideElement form = $("form");
-        form.$("[data-test-id='login'] input").setValue("tim1");
-        form.$("[data-test-id='password'] input").setValue("pass1");
+        form.$("[data-test-id='login'] input").setValue(this.userValidActive.getLogin());
+        form.$("[data-test-id='password'] input").setValue(this.userValidActive.getPassword());
         form.$("[data-test-id='action-login']").click();
         $("h2.heading").shouldHave(Condition.text("Личный кабинет"));
     }
