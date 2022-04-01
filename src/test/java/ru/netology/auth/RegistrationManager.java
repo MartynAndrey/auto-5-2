@@ -16,11 +16,11 @@ public class RegistrationManager {
             .log(LogDetail.ALL)
             .build();
 
-    public static void RegistrationInfoSetUp(String login, String password, String status) {
+    public static void registrationInfoSetUp(RegistrationInfo userInfo) {
         // сам запрос
         given() // "дано"
                 .spec(requestSpec) // указываем, какую спецификацию используем
-                .body(new RegistrationInfo(login, password, status)) // передаём в теле объект, который будет преобразован в JSON
+                .body(userInfo) // передаём в теле объект, который будет преобразован в JSON
                 .when() // "когда"
                 .post("/api/system/users") // на какой путь, относительно BaseUri отправляем запрос
                 .then() // "тогда ожидаем"
