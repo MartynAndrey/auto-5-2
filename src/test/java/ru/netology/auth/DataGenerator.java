@@ -7,19 +7,8 @@ import java.util.Locale;
 public class DataGenerator {
     private static String locale = "ru";
 
-    public static RegistrationInfo generateActiveUserInfo () {
+    public static RegistrationInfo generateUserWithStatus (String status) {
         Faker faker = new Faker(new Locale(locale));
-        String login = faker.name().username();
-        String password = faker.internet().password();
-
-        return new RegistrationInfo(login, password, "active");
-    }
-
-    public static RegistrationInfo generateBlockedUserInfo () {
-        Faker faker = new Faker(new Locale(locale));
-        String login = faker.name().username();
-        String password = faker.internet().password();
-
-        return new RegistrationInfo(login, password, "blocked");
+        return new RegistrationInfo(faker.name().username(), faker.internet().password(), status);
     }
 }
