@@ -1,10 +1,8 @@
 package ru.netology.auth;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Value;
 
-@Data
-@AllArgsConstructor
+@Value
 public class RegistrationInfo {
     private String login;
     private String password;
