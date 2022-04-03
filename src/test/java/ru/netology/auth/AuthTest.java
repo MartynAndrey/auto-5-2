@@ -11,6 +11,8 @@ import static com.codeborne.selenide.Selenide.open;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class AuthTest {
+    private final String activeStatus = "active";
+    private final String blockedStatus = "blocked";
     private RegistrationInfo userInvalidActive;
     private RegistrationInfo userInvalidBlocked;
     private RegistrationInfo userValidActive;
@@ -18,10 +20,10 @@ public class AuthTest {
 
     @BeforeAll
     public void setUpAll() {
-        this.userInvalidActive = DataGenerator.generateActiveUserInfo();
-        this.userInvalidBlocked = DataGenerator.generateBlockedUserInfo();
-        this.userValidActive = DataGenerator.generateActiveUserInfo();
-        this.userValidBlocked = DataGenerator.generateBlockedUserInfo();
+        this.userInvalidActive = DataGenerator.generateUserWithStatus(activeStatus);
+        this.userInvalidBlocked = DataGenerator.generateUserWithStatus(blockedStatus);
+        this.userValidActive = DataGenerator.generateUserWithStatus(activeStatus);
+        this.userValidBlocked = DataGenerator.generateUserWithStatus(blockedStatus);
         RegistrationManager.registrationInfoSetUp(this.userValidActive);
         RegistrationManager.registrationInfoSetUp(this.userValidBlocked);
     }
